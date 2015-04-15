@@ -119,6 +119,12 @@ class Fluent::GeoipOutput < Fluent::BufferedOutput
 
   def add_geoip_field(record)
     placeholder = create_placeholder(geolocate(get_address(record)))
+    if placeholder.empty?
+      return record
+    end
+    if placeholder.values.include?(nil)
+      return record
+    end
     @map.each do |record_key, value|
       if value.match(REGEXP_PLACEHOLDER_SINGLE)
         rewrited = placeholder[value]
